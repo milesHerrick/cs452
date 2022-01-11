@@ -27,6 +27,7 @@ struct process
 	int block_t; //blocktime
 } proc[N];
 queue <process> ready; //readyQ
+queue <process> block; //BlockQ
 
 bool cmp_FCFS(process a, process b)
 {
