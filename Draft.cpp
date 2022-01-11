@@ -195,7 +195,7 @@ void FCFS()
 		}
 		else 
 		{
-			int in_block = 0
+			int in_block = 0;
 			while (1)
 			{
 				block_check();
