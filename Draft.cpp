@@ -51,7 +51,7 @@ void init()
 		endl; //in order
 	for (int i = 1; i <= n; i++)
 	{
-		cout << "process " << i << ":";
+		cout << "process " << i << ": ";
 		cin >> proc[i].arrive >> proc[i].work;
 		//initialize
 		proc[i].id = i;
@@ -79,7 +79,7 @@ void block_check() //check if a process is invoked from expiration
 			if (rand() % 2) 
 			{
 				t2.block_t += (now - t2.block_p); 
-				cout << "Clocktick " << now << "，process" << t2.id << " continue running" << endl;
+				cout << "clock tick: " << now << ", process" << t2.id << " continue running" << endl;
 				ready.push(t2);
 			}
 			else 
@@ -121,7 +121,7 @@ void FCFS()
 		{
 			
 			if (min_arrive > now)
-				cout << "ClockTick: " << now << " no process running" << endl;
+				cout << "clock tick: " << now << " no process running" << endl;
 			now = min_arrive;
 			for (int i = 1; i <= n; i++)
 			{
@@ -173,10 +173,10 @@ void FCFS()
 			}
 			if (t.rest > 0) 
 			{
-				cout << "ClockTick: " << now - once << " PID " << t.id << " runs";
+				cout << "clock tick: " << now - once << " PID " << t.id << " runs";
 				if (t.block_p == now) //
 				{
-					cout << " ,then expired ";
+					cout << ", then expired ";
 				}
 				else 
 				{
@@ -186,7 +186,7 @@ void FCFS()
 			}
 			else 
 			{
-				cout << "ClockTick: " << now << " PID " << t.id << " Terminates" << endl;
+				cout << "clock tick: " << now << " PID " << t.id << " terminates" << endl;
 				t.end = now; 
 				t.finish = 1; 
 				t.turnaround = t.end - t.arrive; 
@@ -213,7 +213,7 @@ void FCFS()
 			}
 			if (in_block > 0) 
 			{
-				cout << "ClockTick: " << now - in_block << " - " << now  << " no process running" << endl;
+				cout << "clock tick: " << now - in_block << " - " << now  << " no process running" << endl;
 			}
 		}
 	}
@@ -231,7 +231,7 @@ void display()
 		//cout << left << setw(10) << proc[i].id << setw(10) << proc[i].arrive << setw(10) << proc[i].work << setw(10) << proc[i].begin << setw(10) << proc[i].end << setw(10) << proc[i].turnaround << setw(10) << proc[i].wait << setw(10) << proc[i].block_t << endl;
 	}
 	cout << "Average Turnaround Time: " << (double)sum_turnaround / n << endl;
-	cout << "Average Wait Time:" << (double)sum_wait / n << endl;
+	cout << "Average Wait Time: " << (double)sum_wait / n << endl;
 	cout << "Number of Process Scheduled: " << n << endl;
 	return;
 }
