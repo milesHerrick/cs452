@@ -28,6 +28,7 @@ struct process
 } proc[N];
 queue <process> ready; //readyQ
 queue <process> block; //BlockQ
+queue <process> block_new; //BlockQ
 
 bool cmp_FCFS(process a, process b)
 {
@@ -44,13 +45,13 @@ bool cmp_id(process a, process b)
 
 void init()
 {
-	cout << "input the number of process：";
+	cout << "input the number of process :";
 	cin >> n;
-	cout << "input the info:" <<
+	cout << "input the info: " <<
 		endl; //in order
 	for (int i = 1; i <= n; i++)
 	{
-		cout << "process" << i << ":";
+		cout << "process " << i << ":";
 		cin >> proc[i].arrive >> proc[i].work;
 		//initialize
 		proc[i].id = i;
@@ -78,7 +79,7 @@ void block_check() //check if a process is invoked from expiration
 			if (rand() % 2) 
 			{
 				t2.block_t += (now - t2.block_p); 
-				cout << "Clocktick" << now << "，process" << t2.id << "continue running" << endl;
+				cout << "Clocktick " << now << "，process" << t2.id << " continue running" << endl;
 				ready.push(t2);
 			}
 			else 
@@ -120,7 +121,7 @@ void FCFS()
 		{
 			
 			if (min_arrive > now)
-				cout << "ClockTick:" << now << "no process running" << endl;
+				cout << "ClockTick: " << now << " no process running" << endl;
 			now = min_arrive;
 			for (int i = 1; i <= n; i++)
 			{
@@ -172,10 +173,10 @@ void FCFS()
 			}
 			if (t.rest > 0) 
 			{
-				cout << "ClockTIck:" << now - once << "PID" << t.id << "runs";
+				cout << "ClockTick: " << now - once << " PID " << t.id << " runs";
 				if (t.block_p == now) //
 				{
-					cout << ",then expired";
+					cout << " ,then expired ";
 				}
 				else 
 				{
@@ -185,7 +186,7 @@ void FCFS()
 			}
 			else 
 			{
-				cout << "ClockTick:" << now << "PID" << t.id << "Terminates" << endl;
+				cout << "ClockTick: " << now << " PID " << t.id << " Terminates" << endl;
 				t.end = now; 
 				t.finish = 1; 
 				t.turnaround = t.end - t.arrive; 
@@ -212,7 +213,7 @@ void FCFS()
 			}
 			if (in_block > 0) 
 			{
-				cout << "ClockTick:" << now - in_block << "-" << now  << "no process running" << endl;
+				cout << "ClockTick: " << now - in_block << " - " << now  << " no process running" << endl;
 			}
 		}
 	}
@@ -220,11 +221,6 @@ void FCFS()
 
 void display()
 {
-	sort(proc, proc + n + 1, cmp_id);
-	cout << "All processes terminated, below are the results:" << endl;
-	cout << setw(8) << "PID" << setw(10) << "ArriveTime" << setw(10) << "WorkTime" << setw(10) << "BeginTime" << setw(
-		10) << "FinishTime" << setw(10) << "TurnaroundTime" << setw(10) << "WaitTime" << setw(10) << "ExpireTime";
-	cout << endl;
 	int sum_work = 0, sum_turnaround = 0, sum_wait = 0, sum_block = 0;
 	for (int i = 1; i <= n; i++)
 	{
@@ -232,11 +228,11 @@ void display()
 		sum_turnaround += proc[i].turnaround;
 		sum_block += proc[i].block_t;
 		sum_wait += proc[i].wait;
-		cout << left << setw(10) << proc[i].id << setw(10) << proc[i].arrive << setw(10) << proc[i].work << setw(10) << proc[i].begin << setw(10) << proc[i].end << setw(10) << proc[i].turnaround << setw(10) << proc[i].wait << setw(10) << proc[i].block_t << endl;
+		//cout << left << setw(10) << proc[i].id << setw(10) << proc[i].arrive << setw(10) << proc[i].work << setw(10) << proc[i].begin << setw(10) << proc[i].end << setw(10) << proc[i].turnaround << setw(10) << proc[i].wait << setw(10) << proc[i].block_t << endl;
 	}
-	cout << "Average Turnaround Time：" << (double)sum_turnaround / n << endl;
-	cout << "Average Wait Time" << (double)sum_wait / n << endl;
-	cout << "Number of Process Scheduled：" << n << endl;
+	cout << "Average Turnaround Time: " << (double)sum_turnaround / n << endl;
+	cout << "Average Wait Time:" << (double)sum_wait / n << endl;
+	cout << "Number of Process Scheduled: " << n << endl;
 	return;
 }
 
