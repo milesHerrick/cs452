@@ -5,6 +5,7 @@ int k, n, q;
 int quantum;
 int interval;
 int now = 0;
+//you can change how many processes you run by changing the txt file below VVV
 ifstream infile("100processes.txt");
 struct process
 {
