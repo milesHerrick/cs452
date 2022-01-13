@@ -12,8 +12,10 @@ cin >> interval;
 
 //each of these should be their own function:
 
-// load each process into the queue based on priority-
+// --load each process into the queue based on priority--done--
 
-//parse input file-easy /implement time quantum / ageing - promotion - demotion-
+// --parse input file --done-- 
+
+// implement time quantum / ageing - promotion - demotion-
 
 }
