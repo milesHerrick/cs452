@@ -87,7 +87,7 @@ void findWaitTime(vector<process> proc, int size, int wait[])
 void findTurnAroundTime(vector<process> proc, int size, int wait[], int turnaround[]) 
 { 
     // calculating turnaround time by adding 
-    // bt[i] + wait[i] 
+    // burst[i] + wait[i] 
     for (int  i = 0; i < size; i++) 
         turnaround[i] = proc[i].burst + wait[i]; 
 } 
