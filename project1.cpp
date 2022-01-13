@@ -12,7 +12,7 @@ cin >> interval;
 
 //each of these should be their own function:
 
-// --load each process into the queue based on priority--done--
+// --load each process into the queue based on priority -done--
 
 // --parse input file --done-- 
 
