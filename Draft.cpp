@@ -15,17 +15,6 @@ struct process
 	int priority; //priority value
 	int ageIndex; //age index
 
-	int pos; //posi after arrange
-	int work; //worktime - burst?
-	int begin; //begintime
-	int end; //endtime
-	int turnaround; //turnaroundtime
-	int wait; //waittime - time quantum or age index
-	bool in; //in(out)preplist?
-	bool finish; //(un)finished?
-	int rest; //restofworktime
-	int block_p; //recentblockpoint
-	int block_t; //blocktime
 };
 vector <process> proc; //list of processes
 
@@ -85,8 +74,7 @@ void findWaitTime(vector<process> proc, int size, int wait[])
 } 
   
 // Function to calculate turn around time 
-void findTurnAroundTime(vector<process> proc, int size, int wait[], int turnaround[]) 
-{ 
+void findTurnAroundTime(vector<process> proc, int size, int wait[], int turnaround[]){ 
     // calculating turnaround time by adding 
     // burst[i] + wait[i] 
     for (int  i = 0; i < size; i++) 
@@ -94,8 +82,7 @@ void findTurnAroundTime(vector<process> proc, int size, int wait[], int turnarou
 } 
   
 //Function to calculate average time 
-void findavgTime(vector<process> proc, int n) 
-{ 
+void findavgTime(vector<process> proc, int n){ 
     int wait[n], turnaround[n], total_wait = 0, total_turnaround = 0; 
   
     //Function to find waiting time of all processes 
@@ -116,8 +103,7 @@ void findavgTime(vector<process> proc, int n)
 	cout << "Average Turnaround Time: " << (double)total_turnaround / proc.size() << endl;  
 } 
   
-void priorityScheduling(vector<process> proc, int n) 
-{ 
+void priorityScheduling(vector<process> proc, int n){ 
     // Sort processes by priority 
     sort(proc.begin(), proc.end(), compare); 
     findavgTime(proc, n); 
@@ -139,7 +125,14 @@ int main()
 	
 	initialize();
 	
-	int size = sizeof proc - sizeof proc[0];
-	priorityScheduling(proc, proc.size());
+	//int size = sizeof proc - sizeof proc[0];
+	//priorityScheduling(proc, proc.size());
+
+	/* un comment this to print out the processes by priority
+	for(int i = 0; i < proc.size(); i++){
+		sort(proc.begin(), proc.end(), compare);
+		cout << proc[i].id << " " << proc[i].priority << endl;
+	}
+	*/
 	return 0;
 }
