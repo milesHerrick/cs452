@@ -1,10 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define N 100000000
-int k, n, q;
 int quantum;
 int interval;
-int now = 0;
 //you can change how many processes you run by changing the txt file below VVV
 ifstream infile("100processes.txt");
 struct process
@@ -14,16 +11,18 @@ struct process
 	int arrival; //arrival time
 	int priority; //priority value
 	int ageIndex; //age index
+	int burstLeft;
+	bool completed;
 
 };
 vector <process> proc; //list of processes
 
 bool compare(process &a, process &b)
 {
-	if (a.priority != b.priority)
-		return a.priority > b.priority;
+	if (a.arrival != b.arrival)
+		return a.arrival < b.arrival;
 	else
-		return a.id < b.id;
+		return a.priority > b.priority;
 }
 
 void initialize()
@@ -49,10 +48,11 @@ void initialize()
 			
 			temp.id = id; //assigns PID to temp process 
 			temp.burst = burst; //assigns burst value
+			temp.burstLeft = burst;
 			temp.arrival = arrival; //assigns arrival time
 			temp.priority = priority; //assigns priority
 			temp.ageIndex = ageIndex; //assigns age index
-			
+			temp.completed = false;
 			proc.insert(proc.end(), temp);
 			//cout << "id is: " << temp.id << " " << temp.burst << " " << temp.arrival << " " << temp.priority << " " << temp.ageIndex << endl;
 			
@@ -91,30 +91,111 @@ void findavgTime(vector<process> proc, int n){
     //Function to find turn around time for all processes 
     findTurnAroundTime(proc, n, wait, turnaround); 
 
+	//cout << "\nProcesses  "<< " Burst time  "
+    //     << " Waiting time  " << " Turn around time\n"; 
     // Calculate total waiting time and total turn 
     // around time 
     for (int  i=0; i<n; i++) 
-    { 
+    {
         total_wait = total_wait + wait[i]; 
-        total_turnaround = total_turnaround + turnaround[i]; 
+        total_turnaround = total_turnaround + turnaround[i];
 	} 
-	cout << "Number of Process Scheduled: " << proc.size() << endl;
+	cout << "\nNumber of Process Scheduled: " << proc.size() << endl;
 	cout << "Average Wait Time: " << (double)total_wait / proc.size() << endl;
 	cout << "Average Turnaround Time: " << (double)total_turnaround / proc.size() << endl;  
 } 
-  
-void priorityScheduling(vector<process> proc, int n){ 
+
+void priorityScheduling(vector<process> proc, int n, int quantum, int interval){ 
     // Sort processes by priority 
-    sort(proc.begin(), proc.end(), compare); 
-    findavgTime(proc, n); 
-} 
-  
-/*
-	cout << "Number of Process Scheduled: " << proc.size() << endl;
-	cout << "Average Wait Time: " << (double)totalTime / proc.size() << endl;
-	cout << "Average Turnaround Time: " << (double)totalTurnaround / proc.size() << endl;
+    sort(proc.begin(), proc.end(), compare);
+	int clock = 0; // clock tick
+	int completed = 0;
+	int prev = 0;
+	process temp; // temporary process
+	vector<process> readyQueue;
+
+	map<int, vector<process>, greater<int>> priorityMap;
+	/*
+	for(int i = 0; i < 101; i++){
+		priorityMap[i] = {};
+	}
 	*/
 
+	for(int i = 0; i < n; i++){
+		while(!proc.empty() || !readyQueue.empty()){
+			temp = proc[i];
+			proc.erase(proc.begin() + i);
+			if((temp.arrival == clock && temp.burstLeft > 0)){
+				for(int i = 0; i < quantum; i++){
+					temp.burstLeft--;
+					clock++;
+					if(temp.burstLeft < 0){
+						temp.burstLeft = 0;
+					}
+				}
+				if(temp.burstLeft > 0){
+				/*
+					abandoning priority map for now, 
+					try to make it so it runs through the ready queue, 
+					and while thats happening, if something from proc 
+					arrives it adds it to the ready queue
+				*/
+				}
+				else{
+					temp.completed = true;
+					completed++;
+				}
+						
+			}
+		}
+	}	
+	
+
+/* print priority queue
+for(auto ii=priorityMap.begin(); ii!=priorityMap.end(); ++ii){
+	vector <process> inVect = (*ii).second;
+	cout << (*ii).first << ": ";
+	for (unsigned j=0; j<inVect.size(); j++){
+        cout << inVect[j].id << " ";
+    }
+    cout << endl;
+}
+*/
+
+
+	//add processes to a priority map
+/*for printing the map of vectors/ The key is their priority, their values are the PID*/
+/*
+	for(auto ii=priorityMap.begin(); ii!=priorityMap.end(); ++ii){
+	   vector <process> inVect = (*ii).second;
+		
+			while(inVect.size() > 0){
+				if(!inVect.empty()){
+					temp = inVect.back();
+					inVect.pop_back();
+					for(int i = 0; i < quantum; i++){
+						if(temp.burst > 0){
+							temp.burst--;
+							clock++;
+							inVect.push_back(temp);
+							cout << "clock tick: " << clock << " pid: " << temp.id << " burst: " << temp.burst << " priority: " << temp.priority <<  endl;
+						}
+						else if(temp.burst == 0 || temp.burst < 0){
+							clock++;
+							if(i == quantum-1){
+								completed++;
+							}
+						}
+					}
+					//break;
+				}
+			}	
+		}	
+*/		
+
+//cout << endl << completed << endl;
+	findavgTime(proc, n);
+} 
 
 int main()
 {
@@ -124,15 +205,7 @@ int main()
 	cin >> interval;
 	
 	initialize();
-	
-	//int size = sizeof proc - sizeof proc[0];
-	//priorityScheduling(proc, proc.size());
+	priorityScheduling(proc, proc.size(), quantum, interval);
 
-	/* un comment this to print out the processes by priority
-	for(int i = 0; i < proc.size(); i++){
-		sort(proc.begin(), proc.end(), compare);
-		cout << proc[i].id << " " << proc[i].priority << endl;
-	}
-	*/
 	return 0;
 }
