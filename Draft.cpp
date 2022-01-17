@@ -115,40 +115,71 @@ void priorityScheduling(vector<process> proc, int n, int quantum, int interval){
 	vector<process> readyQueue;
 
 	map<int, vector<process>, greater<int>> priorityMap;
-	/*
-	for(int i = 0; i < 101; i++){
-		priorityMap[i] = {};
-	}
-	*/
+	while(!proc.empty()){
+		temp = proc.front();
+			if(temp.arrival < 0){
+				proc.erase(proc.begin());
+				priorityMap[temp.priority].push_back(temp);
+				completed++;
+				//cout << temp.id << endl;
+			}
+			if(temp.arrival == clock){
+				proc.erase(proc.begin());
+				priorityMap[temp.priority].push_back(temp);
+				completed++;
+				//cout << temp.id << endl;
+			} 
+			//cout << priorityMap.begin()->second.front().id;
+			//priorityMap.begin()->second.erase(proc.begin());
+			//run
 
+	
+			/*
+			for(map<int, vector<process>, greater<int>>::iterator it = priorityMap.begin(); it != priorityMap.end(); ++it) {
+				cout << "priority: " << it->first << endl;
+				cout << "Values: ";
+				for(int j = 0; j < it->second.size(); j++){
+					cout << it->second.at(j).id << " ";
+				}
+			cout << endl;
+			}
+			*/
+		
+			clock++;
+			cout << completed << endl;
+			//cout << clock << endl;
+	}
+		
+	/*
 	for(int i = 0; i < n; i++){
-		while(!proc.empty() || !readyQueue.empty()){
+		while(!proc.empty() || !priorityMap.empty()){
 			temp = proc[i];
 			proc.erase(proc.begin() + i);
-			if((temp.arrival == clock && temp.burstLeft > 0)){
-				for(int i = 0; i < quantum; i++){
-					temp.burstLeft--;
-					clock++;
-					if(temp.burstLeft < 0){
-						temp.burstLeft = 0;
+  				//std::cout << "Value: " << it->second << std::endl();
+			//if(temp.priority < )
+				if((temp.arrival == clock && temp.burstLeft > 0)){
+					for(int i = 0; i < quantum; i++){
+						temp.burstLeft--;
+						clock++;
+						if(temp.burstLeft < 0){
+							temp.burstLeft = 0;
+						}
 					}
+					if(temp.burstLeft > 0){
+						priorityMap[temp.priority].push_back(temp);
+					}
+					else{
+						temp.completed = true;
+						completed++;
+					}
+							
 				}
-				if(temp.burstLeft > 0){
-				/*
-					abandoning priority map for now, 
-					try to make it so it runs through the ready queue, 
-					and while thats happening, if something from proc 
-					arrives it adds it to the ready queue
-				*/
-				}
-				else{
-					temp.completed = true;
-					completed++;
-				}
-						
-			}
 		}
-	}	
+	}
+	*/
+			
+			
+
 	
 
 /* print priority queue
