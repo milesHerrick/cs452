@@ -12,7 +12,9 @@ struct process
 	int priority; //priority value
 	int ageIndex; //age index
 	int burstLeft;
-	bool completed;
+	int quantumLeft;
+	int intervalLeft;
+	bool completed = false;
 
 };
 vector <process> proc; //list of processes
@@ -52,7 +54,8 @@ void initialize()
 			temp.arrival = arrival; //assigns arrival time
 			temp.priority = priority; //assigns priority
 			temp.ageIndex = ageIndex; //assigns age index
-			temp.completed = false;
+			temp.intervalLeft = interval;
+			temp.quantumLeft = quantum;
 			proc.insert(proc.end(), temp);
 			//cout << "id is: " << temp.id << " " << temp.burst << " " << temp.arrival << " " << temp.priority << " " << temp.ageIndex << endl;
 			
@@ -108,136 +111,105 @@ void findavgTime(vector<process> proc, int n){
 void priorityScheduling(vector<process> proc, int n, int quantum, int interval){ 
     // Sort processes by priority 
     sort(proc.begin(), proc.end(), compare);
-	int clock = 0; // clock tick
+	int clock = 1; // clock tick
 	int completed = 0;
 	int prev = 0;
 	process temp; // temporary process
 	process temp2; // temporary process
 	vector<process> readyQueue;
-	/* debug
-	for(int i = 0; i < n; i++){
-		temp = proc[i];
-		cout << temp.id << " " << temp.arrival << endl;
-	}
-	*/
+	//debug
+	//for(int i = 0; i < n; i++){
+	//	temp = proc[i];
+	//	cout << temp.id << " " << temp.arrival << " " << temp.burst << endl;
+	//}
+	
 	map<int, vector<process>, greater<int>> priorityMap;
 	while(completed < n){
+		if(!proc.empty()){
 			temp = proc.front();
-				
-			if(temp.arrival <= clock){
-				//run through all at current tick
+			if(temp.arrival <= clock){ //adds process to queue at specified arrival time
 				proc.erase(proc.begin());
 				priorityMap[temp.priority].push_back(temp);
-				//completed++;
-				//cout << completed << endl;
-				//cout << temp.id << endl;
 			}
-
-			if(priorityMap.size() > 0){	//its not really sorting them by priority yet
-				temp2 = priorityMap.begin()->second.front();
-				priorityMap.begin()->second.erase(priorityMap.begin()->second.begin());
-				if(priorityMap.begin()->second.empty()){
-					priorityMap.erase(priorityMap.begin()->first);
-				}
-				cout << temp2.id << " " << temp2.priority << " " << temp2.arrival << endl;
-			}
-			//cout << priorityMap.begin()->second.front().id;
-			//priorityMap.begin()->second.erase(proc.begin());
-			//run
-
-	
-			/*
-			for(map<int, vector<process>, greater<int>>::iterator it = priorityMap.begin(); it != priorityMap.end(); ++it) {
-				cout << "priority: " << it->first << endl;
-				cout << "Values: ";
-				for(int j = 0; j < it->second.size(); j++){
-					cout << it->second.at(j).id << " ";
-				}
-			cout << endl;
-			}
-			*/
-		
-			clock++;
-			//cout << clock << endl;
-		
-	}
-		
-	/*
-	for(int i = 0; i < n; i++){
-		while(!proc.empty() || !priorityMap.empty()){
-			temp = proc[i];
-			proc.erase(proc.begin() + i);
-  				//std::cout << "Value: " << it->second << std::endl();
-			//if(temp.priority < )
-				if((temp.arrival == clock && temp.burstLeft > 0)){
-					for(int i = 0; i < quantum; i++){
-						temp.burstLeft--;
-						clock++;
-						if(temp.burstLeft < 0){
-							temp.burstLeft = 0;
-						}
-					}
-					if(temp.burstLeft > 0){
-						priorityMap[temp.priority].push_back(temp);
-					}
-					else{
-						temp.completed = true;
-						completed++;
-					}
-							
-				}
 		}
-	}
-	*/
-			
-			
 
-	
-
-/* print priority queue
-for(auto ii=priorityMap.begin(); ii!=priorityMap.end(); ++ii){
-	vector <process> inVect = (*ii).second;
-	cout << (*ii).first << ": ";
-	for (unsigned j=0; j<inVect.size(); j++){
-        cout << inVect[j].id << " ";
-    }
-    cout << endl;
-}
-*/
-
-
-	//add processes to a priority map
-/*for printing the map of vectors/ The key is their priority, their values are the PID*/
-/*
-	for(auto ii=priorityMap.begin(); ii!=priorityMap.end(); ++ii){
-	   vector <process> inVect = (*ii).second;
-		
-			while(inVect.size() > 0){
-				if(!inVect.empty()){
-					temp = inVect.back();
-					inVect.pop_back();
-					for(int i = 0; i < quantum; i++){
-						if(temp.burst > 0){
-							temp.burst--;
-							clock++;
-							inVect.push_back(temp);
-							cout << "clock tick: " << clock << " pid: " << temp.id << " burst: " << temp.burst << " priority: " << temp.priority <<  endl;
-						}
-						else if(temp.burst == 0 || temp.burst < 0){
-							clock++;
-							if(i == quantum-1){
-								completed++;
-							}
-						}
-					}
-					//break;
+		if(!priorityMap.empty()){
+			//cout << priorityMap.begin()->first << endl; //prints current highest priority
+			temp2 = priorityMap.begin()->second.back();
+			priorityMap.begin()->second.pop_back();
+			cout << "clock tick: " << clock << endl;
+			cout << temp2.id << " " << temp2.burstLeft << " " << temp2.priority <<  endl;
+			//new logic - simplier, but doesnt work yet
+			if(temp2.burstLeft > 0){
+				if(temp2.quantumLeft > 0){
+					//runs
+					cout << "pid: " << temp2.id << " runs" << endl;
+					temp2.burstLeft--;
+					temp2.quantumLeft--;
+					
 				}
-			}	
-		}	
-*/		
+				else{
+					//demote
+						temp2.priority = (temp2.priority - quantum / 4) % 100;
+						cout << "pid: " << temp2.id << " demoted to queue with priority " << temp2.priority << endl;
+						temp2.quantumLeft = quantum;
+						
+				}
+				if(temp2.intervalLeft > 0){
+					temp2.intervalLeft--;	
+				}
+				else{
+					//promote
+					temp2.priority = (temp2.priority + temp2.ageIndex) % 100;
+					temp2.intervalLeft = interval;
+					cout << "pid: " << temp2.id << " promoted to queue with priority " << temp2.priority << endl;				
+				}
+				priorityMap.begin()->second.push_back(temp2);
+			}
+			else{
+				completed++;
+				cout << "pid: " << temp2.id << " terminates" << endl;
+			}
 
-//cout << endl << completed << endl;
-	findavgTime(proc, n);
+				/* old logic - works "better"
+				if(temp2.quantumLeft > 0 && temp2.burstLeft > 0){
+					if(temp2.quantumLeft > 0){ //can run
+						temp2.quantumLeft--;
+						if(temp2.burstLeft > 0){ //has burst left
+							
+							cout << "pid: " << temp2.id << " runs" << endl;
+							temp2.burstLeft--;
+						}						
+					}
+					else if(temp2.quantumLeft <= 0){ //demoted
+						temp2.priority = (temp2.priority - quantum / 4) % 100;
+						cout << "pid: " << temp2.id << " demoted to queue with priority " << temp2.priority << endl;
+						temp2.quantumLeft = quantum;
+						priorityMap.begin()->second.push_back(temp2);
+					}
+					if(temp2.intervalLeft <= 0){ //promoted
+						temp2.priority = (temp2.priority + temp2.ageIndex) % 100;
+						temp2.intervalLeft = interval;
+						cout << "pid: " << temp2.id << " promoted to queue with priority " << temp2.priority << endl;
+						priorityMap.begin()->second.push_back(temp2);
+						
+					}
+					else if(temp2.intervalLeft > 0){
+						temp2.intervalLeft--;
+						priorityMap.begin()->second.push_back(temp2);
+					}
+				}					
+				else if(temp2.burstLeft <= 0){ //is completed
+						completed++;
+						cout << "pid: " << temp2.id << " terminates" << endl;
+						
+				}
+				*/	
+		}
+			clock++;
+			//cout << clock << endl; //print current tick
+	}
+	//findavgTime(proc, n);
 } 
 
 int main()
