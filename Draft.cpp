@@ -112,23 +112,35 @@ void priorityScheduling(vector<process> proc, int n, int quantum, int interval){
 	int completed = 0;
 	int prev = 0;
 	process temp; // temporary process
+	process temp2; // temporary process
 	vector<process> readyQueue;
-
+	/* debug
+	for(int i = 0; i < n; i++){
+		temp = proc[i];
+		cout << temp.id << " " << temp.arrival << endl;
+	}
+	*/
 	map<int, vector<process>, greater<int>> priorityMap;
-	while(!proc.empty()){
-		temp = proc.front();
-			if(temp.arrival < 0){
+	while(completed < n){
+			temp = proc.front();
+				
+			if(temp.arrival <= clock){
+				//run through all at current tick
 				proc.erase(proc.begin());
 				priorityMap[temp.priority].push_back(temp);
-				completed++;
+				//completed++;
+				//cout << completed << endl;
 				//cout << temp.id << endl;
 			}
-			if(temp.arrival == clock){
-				proc.erase(proc.begin());
-				priorityMap[temp.priority].push_back(temp);
-				completed++;
-				//cout << temp.id << endl;
-			} 
+
+			if(priorityMap.size() > 0){	//its not really sorting them by priority yet
+				temp2 = priorityMap.begin()->second.front();
+				priorityMap.begin()->second.erase(priorityMap.begin()->second.begin());
+				if(priorityMap.begin()->second.empty()){
+					priorityMap.erase(priorityMap.begin()->first);
+				}
+				cout << temp2.id << " " << temp2.priority << " " << temp2.arrival << endl;
+			}
 			//cout << priorityMap.begin()->second.front().id;
 			//priorityMap.begin()->second.erase(proc.begin());
 			//run
@@ -146,8 +158,8 @@ void priorityScheduling(vector<process> proc, int n, int quantum, int interval){
 			*/
 		
 			clock++;
-			cout << completed << endl;
 			//cout << clock << endl;
+		
 	}
 		
 	/*
