@@ -6,13 +6,13 @@
 #include <ctime>
 #include <iomanip>
 #include <bits/stdc++.h>
+#include <fstream>
 using namespace std;
 #define N 100001
 int k, n, q;
 
 int now = 0;
-ifstream infile;
-infile.open("10processes.txt");
+ifstream infile("..\10processes.txt");
 struct process
 {
 	int id; //number
@@ -54,25 +54,32 @@ void init()
     cin >> q;//in order
     cout <<"input the age interval: ";
     cin >> k;
+    string temp1;
+    int Pid; //PID
+	int burst; //default burst value
+	int Arrval; //default arrival time
+	int Prioriyy; //default priority
+	int AgeIndx; //default age index
+	getline(infile, temp1); //parse line of title strings
 	while(infile){ //while(hasNext)
-	if(infile >> id
+	if(infile >> Pid
 			  >> burst
-			  >> arrival
-			  >> priority
-			  >> ageIndex)
+			  >> Arrval
+			  >> Prioriyy
+			  >> AgeIndx)
 	{
 		int i;
 		for(i=1;i<500000;i++){
 		//initialize
-		proc[i].id = infile.id;
+		proc[i].id = Pid;
 		proc[i].in = 0;
 		proc[i].begin = -1; //not start yet
 		proc[i].finish = 0;
 		proc[i].block_t = 0;
 		proc[i].rest = proc[i].work;
-		proc[i].priority=infile.priority;
-		proc[i].ageIndex=infile.ageIndex;
-		proc[i].arrive=infile.arrival;
+		proc[i].priority=Prioriyy;
+		proc[i].ageIndex=AgeIndx;
+		proc[i].arrive=Arrval;
 	}
 	}
 	}
@@ -260,6 +267,16 @@ int main()
 	display();
 	return 0;
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
