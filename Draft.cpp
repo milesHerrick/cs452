@@ -56,7 +56,7 @@ void initialize()
 			temp.ageIndex = ageIndex; //assigns age index
 			temp.intervalLeft = interval;
 			temp.quantumLeft = quantum;
-			if(temp.arrival > 0 && 100 > temp.priority > 0 && temp.burst > 0){
+			if(temp.arrival > 0 && 100 >= temp.priority > 0 && temp.burst > 0){
 				proc.insert(proc.end(), temp);
 			}
 			
@@ -117,13 +117,16 @@ void priorityScheduling(vector<process> proc, int n, int quantum, int interval){
 	int clock = 1; // clock tick
 	int completed = 0;
 	int prev = 0;
+	int highestPriority;
+	queue<process> highestQ;
+	bool burst = false;
 	queue<process> tempQ; //temp queue
-	process newProcess; // temporary process
-	process temp2; // temporary process
+	process newp; // temporary process
+	process current; // temporary process
 	//debug
 	/*
 	for(int i = 0; i < n; i++){
-		newProcess = proc[i];
+		newProcess = proc[i];s
 		cout << newProcess.id << " " << newProcess.arrival << " " << newProcess.priority << " " << newProcess.burst << endl;
 	}
 	*/
@@ -132,20 +135,49 @@ void priorityScheduling(vector<process> proc, int n, int quantum, int interval){
 
 	map<int, queue<process>, greater<int>> priorityMap;
 	while(true){
-		
-			
+
 			while(proc.front().arrival == clock){//adds process to queue at specified arrival time
-				newProcess = proc.front();
+				newp = proc.front();
 				proc.erase(proc.begin());
-				cout << newProcess.id << " " << newProcess.priority << endl;
-				if(priorityMap.find(newProcess.priority) != priorityMap.end()){
-					priorityMap[newProcess.priority].push(newProcess);
-					
-				}else{
-					priorityMap.insert(pair<int, queue<process>>(newProcess.priority, tempQ));
-				}
-				
+				priorityMap[newp.priority].push(newp);
+				//cout << clock << " " << newp.id << endl;
 			}
+			
+				if(!priorityMap.empty()){
+					highestPriority = priorityMap.begin()->first;
+					highestQ = priorityMap.find(highestPriority)->second;
+					priorityMap.find(highestPriority)->second.pop();
+					current = highestQ.front();
+					
+					//cout << clock << " " << current.id << endl;
+					//cout << "clock tick: " << clock << endl;
+					//cout << currentProcess.id << " " << currentProcess.priority << " " << currentProcess.arrival << endl;
+					if(current.completed == false){
+						if(current.burstLeft > 0){
+							cout << "clocktick: " << clock << endl;
+							cout << "pid: " << current.id << " runs "  << current.burstLeft << " " << current.priority << endl;
+							//cout << priorityMap.begin()->second.size() << endl;
+							current.burstLeft--;
+						}
+						if(current.burstLeft == 0){
+							completed++;
+							cout << "clock tick: " << clock << endl;
+							cout << "pid: " << current.id << " terminates" << " " << current.burstLeft << " " << current.priority << endl;
+							cout << endl;
+							//cout << priorityMap.begin()->second.size() << endl;						
+							current.completed = true;		
+						}
+					}
+
+
+
+						//cout << clock << endl;
+						highestQ.push(current);
+						priorityMap[highestPriority].push(current);
+				}
+			
+
+
 				//cout << "current highest priority: " << priorityMap.begin()->first << endl; //prints current highest priority
 				
 				// if(!priorityMap.begin()->second.empty()){
