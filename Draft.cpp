@@ -3,7 +3,7 @@ using namespace std;
 int quantum;
 int interval;
 //you can change how many processes you run by changing the txt file below VVV
-ifstream infile("10processes.txt");
+ifstream infile("500kprocesses.txt");
 struct process
 {
 	int id; //PID
@@ -56,7 +56,7 @@ void initialize()
 			temp.ageIndex = ageIndex; //assigns age index
 			temp.intervalLeft = interval;
 			temp.quantumLeft = quantum;
-			if(temp.arrival > 0 && 100 >= temp.priority > 0 && temp.burst > 0){
+			if((temp.arrival >= 0) && 100 >= temp.priority > 0 && temp.burst > 0){
 				proc.insert(proc.end(), temp);
 			}
 			
@@ -114,7 +114,7 @@ void findavgTime(vector<process> proc, int n){
 void priorityScheduling(vector<process> proc, int n, int quantum, int interval){ 
     // Sort processes by priority 
     sort(proc.begin(), proc.end(), compare);
-	int clock = 1; // clock tick
+	int clock = 0; // clock tick
 	int completed = 0;
 	int prev = 0;
 	int highestPriority;
@@ -123,6 +123,8 @@ void priorityScheduling(vector<process> proc, int n, int quantum, int interval){
 	queue<process> tempQ; //temp queue
 	process newp; // temporary process
 	process current; // temporary process
+	process current2; // temporary process
+	map<int, queue<process>, greater<int>> priorityMap;
 	//debug
 	/*
 	for(int i = 0; i < n; i++){
@@ -130,38 +132,33 @@ void priorityScheduling(vector<process> proc, int n, int quantum, int interval){
 		cout << newProcess.id << " " << newProcess.arrival << " " << newProcess.priority << " " << newProcess.burst << endl;
 	}
 	*/
-
-
-
-	map<int, queue<process>, greater<int>> priorityMap;
 	while(true){
 
 			while(proc.front().arrival == clock){//adds process to queue at specified arrival time
 				newp = proc.front();
 				proc.erase(proc.begin());
 				priorityMap[newp.priority].push(newp);
-				//cout << clock << " " << newp.id << endl;
+				//cout << clock << " " << newp.id << endl; //print process in order of arrival
 			}
 			
 				if(!priorityMap.empty()){
+					if(priorityMap.begin()->second.size() == 0){
+						priorityMap.erase(priorityMap.begin()->first);
+					}
 					highestPriority = priorityMap.begin()->first;
-					highestQ = priorityMap.find(highestPriority)->second;
+					current = priorityMap.find(highestPriority)->second.front();
 					priorityMap.find(highestPriority)->second.pop();
-					current = highestQ.front();
-					
-					//cout << clock << " " << current.id << endl;
-					//cout << "clock tick: " << clock << endl;
-					//cout << currentProcess.id << " " << currentProcess.priority << " " << currentProcess.arrival << endl;
 					if(current.completed == false){
 						if(current.burstLeft > 0){
-							cout << "clocktick: " << clock << endl;
+							cout << "clocktick: " << clock  << " " << completed << endl;
 							cout << "pid: " << current.id << " runs "  << current.burstLeft << " " << current.priority << endl;
+							//cout << priorityMap.begin()->second.size() << " " << highestPriority <<" "<< current.id << endl;
 							//cout << priorityMap.begin()->second.size() << endl;
 							current.burstLeft--;
 						}
 						if(current.burstLeft == 0){
 							completed++;
-							cout << "clock tick: " << clock << endl;
+							cout << "clock tick: " << clock << " " << completed << endl;
 							cout << "pid: " << current.id << " terminates" << " " << current.burstLeft << " " << current.priority << endl;
 							cout << endl;
 							//cout << priorityMap.begin()->second.size() << endl;						
@@ -172,8 +169,8 @@ void priorityScheduling(vector<process> proc, int n, int quantum, int interval){
 
 
 						//cout << clock << endl;
-						highestQ.push(current);
-						priorityMap[highestPriority].push(current);
+						//highestQ.push(current);
+						priorityMap[current.priority].push(current);
 				}
 			
 
