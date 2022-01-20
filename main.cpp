@@ -12,7 +12,7 @@ using namespace std;
 int k, n, q;
 
 int now = 0;
-ifstream infile("..\10processes.txt");
+ifstream infile("10processes.txt");
 struct process
 {
 	int id; //number
